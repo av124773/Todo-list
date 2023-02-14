@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const todo = require('./models/todo')
 
 // 僅在非正式環境時，使用dotenv
 if (process.env.NODE_ENV !== 'production') {
