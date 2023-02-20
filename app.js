@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const exphbs = require('express-handlebars')
 const bodyParser = require('body-parser')
+const methodOverride = require('method-override')
 
 const Todo = require('./models/todo')
 const { SchemaTypeOptions } = require('mongoose')
@@ -31,6 +32,8 @@ app.engine('hbs', exphbs({ default: 'main', extname: 'hbs' }))
 app.set('view engine', 'hbs')
 
 app.use(bodyParser.urlencoded({ extended: true }))
+
+app.use(methodOverride('_method'))
 
 app.get('/', (req,res) => {
   Todo.find() // 取出 Todo model 裡的所有資料
@@ -67,23 +70,20 @@ app.post('/todos', (req, res) => {
     .catch(error => console.log(error))
 })
 
-app.post('/todos/:id/edit', (req, res) => {
+app.put('/todos/:id', (req, res) => {
   const id = req.params.id
   const { name, isDone } = req.body 
-  console.log('req.body= ', req.body)
-  console.log('isDone= ', isDone)
   return Todo.findById(id)
     .then(todo => {
       todo.name = name
       todo.isDone = isDone === 'on'
-      console.log(todo.isDone)
       return todo.save()
     })
     .then(() => res.redirect(`/todos/${id}`))
     .catch(error => console.log(error))
 })
 
-app.post('/todos/:id/delete', (req, res) => {
+app.delete('/todos/:id', (req, res) => {
   const id = req.params.id 
   return Todo.findById(id)
     .then(todo => todo.remove())
